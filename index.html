@@ -1840,6 +1840,57 @@ function focusSearch(){
 }
 
 
+/* ================================
+   메인 검색
+   광고 / 추천사이트 / 추천영상 검색
+================================ */
+function search(){
+
+  const input = document.getElementById("searchInput");
+  if(!input) return;
+
+  const keyword = input.value.trim().toLowerCase();
+
+  if(!keyword){
+    return;
+  }
+
+  const items = document.querySelectorAll(".ad-item");
+  let found = false;
+  let firstFound = null;
+
+  items.forEach(item => {
+
+    item.classList.remove("highlight");
+
+    const title = (
+      item.getAttribute("data-title") ||
+      item.innerText ||
+      ""
+    ).toLowerCase();
+
+    if(title.includes(keyword)){
+      item.classList.add("highlight");
+      found = true;
+
+      if(!firstFound){
+        firstFound = item;
+      }
+    }
+  });
+
+  if(firstFound){
+    firstFound.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+    return;
+  }
+
+  alert("검색 결과가 없습니다.");
+}
+
+
 async function loadSite(){
 
   const imgBox=document.getElementById("imageAds");
