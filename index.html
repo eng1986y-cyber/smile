@@ -1350,6 +1350,34 @@ button:hover{
    상품주소복사 버튼
 ========================= */
 
+/* ===== 검색창 로고 안정화 ===== */
+
+.search-logo-inside{
+  display:block;
+  height:22px;
+  width:auto;
+  max-width:160px;
+  flex-shrink:0;
+  object-fit:contain;
+  opacity:1 !important;
+  visibility:visible;
+  transition:none;
+}
+
+@media(max-width:768px){
+
+  .search-logo-inside{
+    display:block;
+    height:17px;
+    width:auto;
+    max-width:120px;
+    flex-shrink:0;
+    opacity:1 !important;
+    visibility:visible;
+  }
+
+}
+
 </style>
 <link rel="canonical" href="https://yb365.info/smile/">
 
@@ -1380,10 +1408,9 @@ button:hover{
 
     <div class="search-box-inner">
 
-      <!-- 로고 -->
-      <img id="searchLogo"
-           class="search-logo-inside"
-           style="display:none;">
+<img id="searchLogo"
+     class="search-logo-inside"
+     alt="사이트 로고">
 
       <!-- 입력 -->
       <input
@@ -2250,19 +2277,37 @@ if(ad.type==="sns"){
 
     const s=settings[0];
 
-if(s.search_logo){
-  const el = document.getElementById("searchLogo");
+/* =========================
+   검색창 로고
+========================= */
 
-  if(el){
-    el.onload = () => {
-      el.style.display = "block";
-      setTimeout(()=>{
-        el.style.opacity = "1";
-      }, 10);
+const logoEl = document.getElementById("searchLogo");
+
+if(logoEl){
+
+  const logoUrl = (s.search_logo || "").trim();
+
+  if(logoUrl){
+
+    logoEl.onerror = () => {
+      console.error("검색 로고 이미지 로딩 실패:", logoUrl);
+
+      logoEl.style.display = "none";
     };
 
-    el.src = s.search_logo
+    logoEl.onload = () => {
+      logoEl.style.display = "block";
+      logoEl.style.opacity = "1";
+    };
+
+    logoEl.src = logoUrl;
+
+  }else{
+
+    logoEl.style.display = "none";
+
   }
+
 }
 
 if(s.banner_img){
