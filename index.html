@@ -1095,11 +1095,6 @@ html{
   scrollbar-gutter:stable;
 }
 
-body.modal-open{
-  overflow:hidden;
-  touch-action:none;
-}
-
 /* ===== 구글 애드센스 ===== */
 
 #adsenseArea{
@@ -1637,14 +1632,7 @@ function openSiteInfo(type){
   content.innerText =
     info.content.trim();
 
-
-  modal.style.display =
-    "flex";
-
-
-  document.body.classList.add(
-    "modal-open"
-  );
+modal.style.display = "flex";
 
 }
 
@@ -1659,16 +1647,7 @@ function closeSiteInfo(event){
     return;
   }
 
-
-  document
-    .getElementById("siteInfoModal")
-    .style.display =
-    "none";
-
-
-  document.body.classList.remove(
-    "modal-open"
-  );
+document.getElementById("siteInfoModal").style.display = "none";
 
 }
 
