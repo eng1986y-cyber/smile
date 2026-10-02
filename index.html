@@ -1376,31 +1376,36 @@ button:hover{
 
 }
 
-@media(max-width:768px){
-
-  #searchLogo.search-logo-inside{
-    height:30px;
-    max-width:130px;
-    margin-left:8px;
-    margin-right:5px;
-  }
-
-}
-
-/* =========================
-   사이트 로고 최종 표시
-========================= */
+/* ==============================
+   로고 깜빡임 / 깨진 이미지 방지
+   ============================== */
 
 #searchLogo.search-logo-inside{
-  display:block !important;
-  opacity:1 !important;
-  height:46px;
+  display:none !important;
+  opacity:0 !important;
+  height:30px;
   width:auto;
   max-width:180px;
   object-fit:contain;
   flex-shrink:0;
   margin-left:14px;
   margin-right:8px;
+}
+
+#searchLogo.search-logo-inside.logo-loaded{
+  display:block !important;
+  opacity:1 !important;
+}
+
+@media(max-width:768px){
+
+  #searchLogo.search-logo-inside{
+    height:22px;
+    max-width:130px;
+    margin-left:8px;
+    margin-right:5px;
+  }
+
 }
 
 </style>
@@ -1433,9 +1438,11 @@ button:hover{
 
     <div class="search-box-inner">
 
+<!-- 로고 -->
 <img id="searchLogo"
      class="search-logo-inside"
-     alt="사이트 로고">
+     alt="사이트 로고"
+     style="display:none; opacity:0;">
 
       <!-- 입력 -->
       <input
@@ -2294,18 +2301,42 @@ const logo = document.getElementById("searchLogo");
 
 if(logo){
 
+  // 로고가 완전히 로드되기 전까지 숨김
+  logo.classList.remove("logo-loaded");
+  logo.style.display = "none";
+  logo.style.opacity = "0";
+
   if(s.search_logo){
 
-    logo.src = s.search_logo;
+    // 실제 이미지가 정상적으로 로드되는지 먼저 확인
+    const tempLogo = new Image();
 
-    logo.style.display = "block";
-    logo.style.opacity = "1";
+    tempLogo.onload = () => {
+
+      // 정상 로드된 경우에만 실제 로고 표시
+      logo.src = s.search_logo;
+
+      logo.classList.add("logo-loaded");
+      logo.style.display = "block";
+      logo.style.opacity = "1";
+
+    };
+
+    tempLogo.onerror = () => {
+
+      // 로드 실패하면 깨진 이미지 대신 완전히 숨김
+      logo.removeAttribute("src");
+      logo.classList.remove("logo-loaded");
+      logo.style.display = "none";
+      logo.style.opacity = "0";
+
+    };
+
+    tempLogo.src = s.search_logo;
 
   }else{
 
     logo.removeAttribute("src");
-
-    logo.style.display = "none";
 
   }
 
