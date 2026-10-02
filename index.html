@@ -1939,6 +1939,86 @@ function search(){
   alert("검색 결과가 없습니다.");
 }
 
+/* =========================
+   사이트 로고 안정화
+========================= */
+
+(function(){
+
+  const logo = document.getElementById("searchLogo");
+
+  if(!logo) return;
+
+  const logoKey = "smile_search_logo";
+
+  /*
+   * 마지막으로 정상적으로 표시된 로고
+   */
+  const savedLogo =
+    localStorage.getItem(logoKey);
+
+  /*
+   * 처음에는 로고를 숨김
+   * 깨진 이미지가 보이는 것을 방지
+   */
+  logo.classList.remove("logo-loaded");
+  logo.style.display = "none";
+  logo.style.opacity = "0";
+
+  /*
+   * 로고 표시 함수
+   */
+  function showLogo(url){
+
+    if(!url) return;
+
+    const test = new Image();
+
+    test.onload = function(){
+
+      logo.src = url;
+
+      logo.classList.add("logo-loaded");
+      logo.style.display = "block";
+      logo.style.opacity = "1";
+
+      /*
+       * 정상 로드된 주소 저장
+       */
+      localStorage.setItem(
+        logoKey,
+        url
+      );
+
+    };
+
+    test.onerror = function(){
+
+      /*
+       * 저장된 로고가 깨졌을 때만 숨김
+       */
+      logo.removeAttribute("src");
+      logo.classList.remove("logo-loaded");
+      logo.style.display = "none";
+      logo.style.opacity = "0";
+
+    };
+
+    test.src = url;
+  }
+
+
+  /*
+   * 이전에 정상적으로 보였던 로고가 있으면
+   * Supabase보다 먼저 표시
+   */
+  if(savedLogo){
+
+    showLogo(savedLogo);
+
+  }
+
+})();
 
 async function loadSite(){
 
@@ -2294,108 +2374,40 @@ if(ad.type==="sns"){
     const s=settings[0];
 
 /* =========================
-   사이트 로고
+   최신 사이트 로고
 ========================= */
 
 const logo = document.getElementById("searchLogo");
 
-if(logo){
+if(logo && s.search_logo){
 
-  /*
-   * 마지막으로 정상 확인된 로고 주소
-   * 브라우저에 저장
-   */
-  const savedLogo =
-    localStorage.getItem("site_search_logo");
+  const testLogo = new Image();
 
-  /*
-   * 로고를 실제로 확인한 뒤에만 표시
-   */
-  const showLogo = (url) => {
+  testLogo.onload = function(){
 
-    if(!url) return;
+    logo.src = s.search_logo;
 
-    const testImage = new Image();
+    logo.classList.add("logo-loaded");
+    logo.style.display = "block";
+    logo.style.opacity = "1";
 
-    testImage.onload = () => {
-
-      logo.src = url;
-
-      logo.classList.add("logo-loaded");
-
-      logo.style.display = "block";
-      logo.style.opacity = "1";
-
-      /*
-       * 정상 로드된 주소 저장
-       */
-      localStorage.setItem(
-        "site_search_logo",
-        url
-      );
-
-    };
-
-    testImage.onerror = () => {
-
-      /*
-       * 이미지 확인 실패
-       * 깨진 이미지 절대 표시하지 않음
-       */
-
-      if(
-        logo.src &&
-        logo.classList.contains("logo-loaded")
-      ){
-        return;
-      }
-
-      logo.removeAttribute("src");
-      logo.classList.remove("logo-loaded");
-      logo.style.display = "none";
-      logo.style.opacity = "0";
-
-    };
-
-    testImage.src = url;
+    localStorage.setItem(
+      "smile_search_logo",
+      s.search_logo
+    );
 
   };
 
+  testLogo.onerror = function(){
 
-  /*
-   * 처음에는 무조건 숨김
-   */
-  logo.classList.remove("logo-loaded");
-  logo.style.display = "none";
-  logo.style.opacity = "0";
+    /*
+     * 최신 주소가 잠시 실패해도
+     * 이미 표시된 기존 로고는 건드리지 않음
+     */
 
+  };
 
-  /*
-   * 이전에 정상적으로 사용했던 로고가 있으면
-   * Supabase 응답을 기다리지 않고 먼저 확인
-   */
-  if(savedLogo){
-
-    showLogo(savedLogo);
-
-  }
-
-
-  /*
-   * Supabase에서 최신 로고 주소가 들어오면
-   * 최신 주소로 교체
-   */
-  if(s.search_logo){
-
-    if(
-      s.search_logo !== savedLogo
-    ){
-
-      showLogo(s.search_logo);
-
-    }
-
-  }
+  testLogo.src = s.search_logo;
 
 }
 
