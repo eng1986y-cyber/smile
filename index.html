@@ -996,15 +996,6 @@ body{
   color:#fff;
 }
 
-.search-logo{
-  height:46px;
-  width:auto;
-  border-radius:6px;
-
-  opacity:0;
-  transition:opacity 0.4s ease;
-}
-
 .ad-section-title{
   margin:0 0 15px;
   font-size:16px;
@@ -1383,6 +1374,33 @@ button:hover{
     visibility:visible;
   }
 
+}
+
+@media(max-width:768px){
+
+  #searchLogo.search-logo-inside{
+    height:30px;
+    max-width:130px;
+    margin-left:8px;
+    margin-right:5px;
+  }
+
+}
+
+/* =========================
+   사이트 로고 최종 표시
+========================= */
+
+#searchLogo.search-logo-inside{
+  display:block !important;
+  opacity:1 !important;
+  height:46px;
+  width:auto;
+  max-width:180px;
+  object-fit:contain;
+  flex-shrink:0;
+  margin-left:14px;
+  margin-right:8px;
 }
 
 </style>
@@ -2269,33 +2287,25 @@ if(ad.type==="sns"){
     const s=settings[0];
 
 /* =========================
-   검색창 로고
+   사이트 로고
 ========================= */
 
-const logoEl = document.getElementById("searchLogo");
+const logo = document.getElementById("searchLogo");
 
-if(logoEl){
+if(logo){
 
-  const logoUrl = (s.search_logo || "").trim();
+  if(s.search_logo){
 
-  if(logoUrl){
+    logo.src = s.search_logo;
 
-    logoEl.onerror = () => {
-      console.error("검색 로고 이미지 로딩 실패:", logoUrl);
-
-      logoEl.style.display = "none";
-    };
-
-    logoEl.onload = () => {
-      logoEl.style.display = "block";
-      logoEl.style.opacity = "1";
-    };
-
-    logoEl.src = logoUrl;
+    logo.style.display = "block";
+    logo.style.opacity = "1";
 
   }else{
 
-    logoEl.style.display = "none";
+    logo.removeAttribute("src");
+
+    logo.style.display = "none";
 
   }
 
