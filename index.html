@@ -2301,30 +2301,55 @@ const logo = document.getElementById("searchLogo");
 
 if(logo){
 
-  // 로고가 완전히 로드되기 전까지 숨김
-  logo.classList.remove("logo-loaded");
-  logo.style.display = "none";
-  logo.style.opacity = "0";
+  /*
+   * 마지막으로 정상 확인된 로고 주소
+   * 브라우저에 저장
+   */
+  const savedLogo =
+    localStorage.getItem("site_search_logo");
 
-  if(s.search_logo){
+  /*
+   * 로고를 실제로 확인한 뒤에만 표시
+   */
+  const showLogo = (url) => {
 
-    // 실제 이미지가 정상적으로 로드되는지 먼저 확인
-    const tempLogo = new Image();
+    if(!url) return;
 
-    tempLogo.onload = () => {
+    const testImage = new Image();
 
-      // 정상 로드된 경우에만 실제 로고 표시
-      logo.src = s.search_logo;
+    testImage.onload = () => {
+
+      logo.src = url;
 
       logo.classList.add("logo-loaded");
+
       logo.style.display = "block";
       logo.style.opacity = "1";
 
+      /*
+       * 정상 로드된 주소 저장
+       */
+      localStorage.setItem(
+        "site_search_logo",
+        url
+      );
+
     };
 
-    tempLogo.onerror = () => {
+    testImage.onerror = () => {
 
-      // 로드 실패하면 깨진 이미지 대신 완전히 숨김
+      /*
+       * 이미지 확인 실패
+       * 깨진 이미지 절대 표시하지 않음
+       */
+
+      if(
+        logo.src &&
+        logo.classList.contains("logo-loaded")
+      ){
+        return;
+      }
+
       logo.removeAttribute("src");
       logo.classList.remove("logo-loaded");
       logo.style.display = "none";
@@ -2332,11 +2357,43 @@ if(logo){
 
     };
 
-    tempLogo.src = s.search_logo;
+    testImage.src = url;
 
-  }else{
+  };
 
-    logo.removeAttribute("src");
+
+  /*
+   * 처음에는 무조건 숨김
+   */
+  logo.classList.remove("logo-loaded");
+  logo.style.display = "none";
+  logo.style.opacity = "0";
+
+
+  /*
+   * 이전에 정상적으로 사용했던 로고가 있으면
+   * Supabase 응답을 기다리지 않고 먼저 확인
+   */
+  if(savedLogo){
+
+    showLogo(savedLogo);
+
+  }
+
+
+  /*
+   * Supabase에서 최신 로고 주소가 들어오면
+   * 최신 주소로 교체
+   */
+  if(s.search_logo){
+
+    if(
+      s.search_logo !== savedLogo
+    ){
+
+      showLogo(s.search_logo);
+
+    }
 
   }
 
